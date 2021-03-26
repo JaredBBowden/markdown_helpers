@@ -18,5 +18,5 @@ I tend to work from within notebooks and interactive terminals. The following wo
 
 _Working from the directory where you images to go_, import the module and run the `markdown_image` function.
 
-You should then be prompted for a file name for your new image. Once this title is intered, the program should return the paths it found, where it moved file, and return a markdown formatted string (containing your new image path) to the clip board. You can now paste this string to your markdown. 
+You should then be prompted for a file name for your new image. Once this title is specified, the program should return the complete path where your new file has been moved (an `images` folder within your current working directory), and return a markdown formatted string (containing your new image path) to the clipboard. You can now paste this string to your markdown document. 
 
