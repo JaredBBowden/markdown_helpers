@@ -2,9 +2,12 @@ import os
 import platform
 import glob
 from datetime import datetime
+import re
 
-# TODO function to move markdown file (and all associated images) to new location
-# TODO make a list of all images that are not used in markdown files
+
+# TODO Well... [gestures broadly] there's a lot. Base functionality is there
+# remaining updates are tagged. I should really have a develop branch for this
+# project, but that's not how we're doing things.
 
 
 def markdown_image(n_files=1):
@@ -82,8 +85,16 @@ def markdown_image(n_files=1):
                     " | xclip -sel clip")
 
 
-"""
 def notebook_to_markdown(notebook_directory_name):
+    """Find notebooks, convert to markdown, push to a "mirrored" version of the 
+    repo, populated _only_ with markdown versions of files. 
+
+    Args:
+        notebook_directory_name ([type]): [description]
+    
+    TODO 
+    * This is starter code only. 
+    """    
 
     # Find all .ipynb suffix files and their FULL path
     notebook_paths = glob.glob("./**/*.ipynb", recursive=True)
@@ -110,23 +121,71 @@ def notebook_to_markdown(notebook_directory_name):
     # that specifies the new notebook method.
 
 
-    from sklearn.datasets import load_diabetes
-    from sklearn.datasets import make_moons
-
-    data = load_diabetes()
-    data = make_moons()
-
-"""
-
-def move_markdown(target_file, destination_location):
-    """
-    Note that this is going to assume that all images are linked from a 
-    directory in the same location as the file
+def find_images_in_markdown(markdown_file_path):
+    """Look at a markdown file, return all image names
 
     Args:
-        target_file ([type]): [description]
-        destination_location ([type]): [description]
-    """
+        markdown_file_path ([type]): [description]
 
-    # This is the link describing regex used to parse image links
-    # https://gist.github.com/ttscoff/dbf4737b04e1635e1d20
+    Returns:
+        [type]: [description]
+    TODO
+    * I could really make better use of these regex objects. For now, I'm 
+    parsing things in a way that is... "not great". 
+    """
+    regex = re.compile("(?:!\[(.*?)\]\((.*?)\))")
+
+    matches = []
+
+    with open(markdown_file_path) as f:
+        for line in f:
+            result = regex.search(line)
+            if result != None:
+                # This is about to be some garbage code
+                first = str(result).split("[")
+                image_only = first[1].split("]")[0]
+                matches.append(image_only)
+
+    return matches
+
+
+def move_file(image_name, source, destination):
+    """Move an image from the source location to a specified destination 
+    location
+
+    Args:
+        image_name ([type]): [description]
+        source ([type]): [description]
+        destination ([type]): [description]
+    TODO 
+    * This function could be used in a number of other locations, above. This 
+    would require a refactor... That I don't really feel like doing right now.
+    """
+    # The original location
+    file_name = source + image_name
+
+    # Where it's going
+    new_file_path = destination + image_name
+
+    # Move the file
+    os.system("cp " + "'" + file_name + "' " + new_file_path)
+
+
+def move_markdown(markdown_file_path, source, destination):
+    """
+    Stuff
+
+    Args:
+        markdown_file_path ([type]): [description]
+        source ([type]): [description]
+        destination ([type]): [description]
+
+    TODO
+    * Need to move the original file, too 
+    """
+    # Find images in the file
+    images_names = find_images_in_markdown(markdown_file_path)
+
+    # Move the files
+    for image_name in images_names:
+        move_file(image_name, source, destination)
