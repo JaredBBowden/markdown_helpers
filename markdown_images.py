@@ -44,6 +44,8 @@ def markdown_image(n_files=1):
     if not os.path.exists(new_path):
         os.makedirs(new_path)
 
+    # Note that this is now a loop: starting to build in functionality to 
+    # accept multiple files
     markdown_return = []
 
     for file_name in subset_file_list:
@@ -69,6 +71,7 @@ def markdown_image(n_files=1):
         markdown_return.append("![](" + relative_path + ")")
 
     # Save the new filepath to the clipboard
+    # TODO has this multiple markdown functionality been tested?
     if system_OS == "Mac":
         if len(markdown_return) == 1:
             os.system("echo " + "'" + markdown_return[0] + "'" + " | pbcopy")
@@ -180,6 +183,10 @@ def move_markdown(markdown_file_path, source, destination):
         source ([type]): [description]
         destination ([type]): [description]
 
+    Let's assume there are some regular patterns here. 
+    1. Images are always going to be located in the same directory as the 
+    markdown file (titled `image`)
+    
     TODO
     * Need to move the original file, too 
     """
@@ -189,3 +196,10 @@ def move_markdown(markdown_file_path, source, destination):
     # Move the files
     for image_name in images_names:
         move_file(image_name, source, destination)
+
+
+def move_file():
+    """
+    
+    """
+
