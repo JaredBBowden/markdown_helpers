@@ -149,12 +149,14 @@ def find_images_in_markdown(markdown_file_path):
                 image_only = first[1].split("]")[0]
                 matches.append(image_only)
 
+    # TODO what happens if there are no matches? What do we want to return 
+    # from this? None? 
     return matches
 
 
-def move_file(image_name, source, destination):
+def move_file(file_name, source_path, destination_path):
     """Move an image from the source location to a specified destination 
-    location
+    location. 
 
     Args:
         image_name ([type]): [description]
@@ -163,6 +165,8 @@ def move_file(image_name, source, destination):
     TODO 
     * This function could be used in a number of other locations, above. This 
     would require a refactor... That I don't really feel like doing right now.
+    * There are some new changes to argument names in here that need to be 
+    propagated. 
     """
     # The original location
     file_name = source + image_name
@@ -174,9 +178,10 @@ def move_file(image_name, source, destination):
     os.system("cp " + "'" + file_name + "' " + new_file_path)
 
 
-def move_markdown(markdown_file_path, source, destination):
-    """
-    Stuff
+def move_markdown(markdown_file_name, source_path, destination_path):
+    """Move a markdown file from one directory to another. If there are image
+    files to move, move those too (and confirm that they are going into an 
+    `images` directory in the new destination)
 
     Args:
         markdown_file_path ([type]): [description]
@@ -189,17 +194,26 @@ def move_markdown(markdown_file_path, source, destination):
     
     TODO
     * Need to move the original file, too 
+    * There are some new changes to argument names in here that need to be 
+    propagated. 
     """
+    
+    # First, confirm that destination exists. If it does, move the markdown
+    # file
+    
+    # Next, if there are markdown images to move, move em. If not, we're done
+    # here
+    
     # Find images in the file
     images_names = find_images_in_markdown(markdown_file_path)
 
-    # Move the files
-    for image_name in images_names:
-        move_file(image_name, source, destination)
+    if len(images_names) > 0:
 
+        # Confirm that the new destination has an images directory 
 
-def move_file():
-    """
+        # Move the files
+        for image_name in images_names:
+            move_file(image_name, source, destination)
     
-    """
-
+    else:
+        return
