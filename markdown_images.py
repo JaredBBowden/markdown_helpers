@@ -113,8 +113,8 @@ def notebook_to_markdown(notebook_directory_name):
         new_path = "/".join(path_list)
 
         # Convert, and save the new file
-        jupyter nbconvert --to html mynotebook.ipynb
-        os.system()
+        #jupyter nbconvert --to html mynotebook.ipynb
+        #os.system()
 
 
         # I think we need some control flow to ensure that, under cases where the
@@ -154,28 +154,25 @@ def find_images_in_markdown(markdown_file_path):
     return matches
 
 
-def move_file(file_name, source_path, destination_path):
-    """Move an image from the source location to a specified destination 
-    location. 
+def move_file(source_file_path, destination_dir_path):
+    """Simple wrapper function for a system command to move a file from the 
+    source location to a specified destination location. 
 
     Args:
-        image_name ([type]): [description]
-        source ([type]): [description]
-        destination ([type]): [description]
+        source_file_path ([type]): the path (including file name) of the file to
+        move
+        destination_dir_path ([type]): the path to the directory where the file 
+        should be moved. 
+    
     TODO 
     * This function could be used in a number of other locations, above. This 
     would require a refactor... That I don't really feel like doing right now.
     * There are some new changes to argument names in here that need to be 
     propagated. 
     """
-    # The original location
-    file_name = source + image_name
-
-    # Where it's going
-    new_file_path = destination + image_name
 
     # Move the file
-    os.system("cp " + "'" + file_name + "' " + new_file_path)
+    os.system("mv " + "'" + source_file_path + "' " + destination_dir_path)
 
 
 def move_markdown(markdown_file_name, source_path, destination_path):
@@ -186,7 +183,8 @@ def move_markdown(markdown_file_name, source_path, destination_path):
     Args:
         markdown_file_path ([type]): [description]
         source ([type]): [description]
-        destination ([type]): [description]
+        destination ([type]): By default, this should point to an images path
+        in the destination
 
     Let's assume there are some regular patterns here. 
     1. Images are always going to be located in the same directory as the 
@@ -210,6 +208,8 @@ def move_markdown(markdown_file_name, source_path, destination_path):
     if len(images_names) > 0:
 
         # Confirm that the new destination has an images directory 
+        if not os.path.exists(destination_path):
+            os.makedirs(destination_path)
 
         # Move the files
         for image_name in images_names:
