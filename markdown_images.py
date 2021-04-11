@@ -175,45 +175,40 @@ def move_file(source_file_path, destination_dir_path):
     os.system("mv " + "'" + source_file_path + "' " + destination_dir_path)
 
 
-def move_markdown(markdown_file_name, source_path, destination_path):
+def move_markdown(source_file_path, destination_dir_path):
     """Move a markdown file from one directory to another. If there are image
     files to move, move those too (and confirm that they are going into an 
     `images` directory in the new destination)
 
     Args:
-        markdown_file_path ([type]): [description]
-        source ([type]): [description]
-        destination ([type]): By default, this should point to an images path
-        in the destination
+        source_file_path ([type]): the path (including file name) of the file to
+        move
+        destination_dir_path ([type]): the path to the directory where the file 
+        should be moved. 
 
     Let's assume there are some regular patterns here. 
     1. Images are always going to be located in the same directory as the 
-    markdown file (titled `image`)
+    markdown file (titled `images`)
     
     TODO
     * Need to move the original file, too 
     * There are some new changes to argument names in here that need to be 
     propagated. 
-    """
-    
-    # First, confirm that destination exists. If it does, move the markdown
-    # file
-    
-    # Next, if there are markdown images to move, move em. If not, we're done
-    # here
+    """    
     
     # Find images in the file
-    images_names = find_images_in_markdown(markdown_file_path)
+    images_names = find_images_in_markdown(source_file_path)
 
     if len(images_names) > 0:
 
         # Confirm that the new destination has an images directory 
-        if not os.path.exists(destination_path):
-            os.makedirs(destination_path)
+        new_image_path = destination_dir_path + "/images/"
+        if not os.path.exists(new_image_path):
+            os.makedirs(new_image_path)
 
-        # Move the files
+        # Move image files files
         for image_name in images_names:
-            move_file(image_name, source, destination)
+            move_file(image_name, new_image_path)
     
-    else:
-        return
+    # Move the original file
+    move_file(source_file_path, destination_dir_path)
