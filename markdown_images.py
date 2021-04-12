@@ -151,6 +151,8 @@ def find_images_in_markdown(markdown_file_path):
 
     # TODO what happens if there are no matches? What do we want to return 
     # from this? None? 
+    print("Found", len(matches), "image links")
+    
     return matches
 
 
@@ -172,7 +174,9 @@ def move_file(source_file_path, destination_dir_path):
     """
 
     # Move the file
-    os.system("mv " + "'" + source_file_path + "' " + destination_dir_path)
+    os.system("cp " + "'" + source_file_path + "' " + destination_dir_path)
+
+    print("Moved", source_file_path, "to", destination_dir_path)
 
 
 def move_markdown(source_file_path, destination_dir_path):
@@ -184,7 +188,7 @@ def move_markdown(source_file_path, destination_dir_path):
         source_file_path ([type]): the path (including file name) of the file to
         move
         destination_dir_path ([type]): the path to the directory where the file 
-        should be moved. 
+        should be moved (_not_ including the final slash) 
 
     Let's assume there are some regular patterns here. 
     1. Images are always going to be located in the same directory as the 
