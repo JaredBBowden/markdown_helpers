@@ -212,6 +212,8 @@ def move_markdown(source_file_path, destination_dir_path):
 
         # Move image files files
         for image_name in images_names:
+            # TODO I've now realized that we need to adjust this path -- 
+            # the image files are just going to be file _names_ (need full path)
             move_file(image_name, new_image_path)
     
     # Move the original file
