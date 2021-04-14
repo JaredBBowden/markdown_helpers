@@ -20,3 +20,7 @@ _Working from the directory where you images to go_, import the module and run t
 
 You should then be prompted for a file name for your new image. Once this title is specified, the program should return the complete path where your new file has been moved (an `images` folder within your current working directory), and return a markdown formatted string (containing your new image path) to the clipboard. You can now paste this string to your markdown document. 
 
+UPDATE: new function added to move a markdown file (and all internal images) from one directory to another. Function will first use regex to search a specified markdown file for conventional image links, and then move these image files (as well as the markdown file) to the specified destination.  
+
+Note also that the archetypal pattern of directory structure is preserved: all image files are moved to an `images` directory within the destination. If one is not present, it is created. 
+
