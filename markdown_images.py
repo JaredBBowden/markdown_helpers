@@ -3,6 +3,7 @@ import platform
 import glob
 from datetime import datetime
 import re
+import pdb
 
 
 # TODO Well... [gestures broadly] there's a lot. Base functionality is there
@@ -144,10 +145,15 @@ def find_images_in_markdown(markdown_file_path):
         for line in f:
             result = regex.search(line)
             if result != None:
+                
                 # This is about to be some garbage code
-                first = str(result).split("[")
-                image_only = first[1].split("]")[0]
-                matches.append(image_only)
+                # For posterity, there is a better way to access the results 
+                # of re matches -- as follows
+                a_match = result.group(0)
+
+                # All we really care about is the image stuff (between parentheses)
+                image_path = a_match[a_match.find("(")+1:a_match.find(")")].replace('"', "")
+                matches.append(image_path)
 
     # TODO what happens if there are no matches? What do we want to return 
     # from this? None? 
@@ -188,7 +194,7 @@ def move_markdown(source_file_path, destination_dir_path):
         source_file_path ([type]): the path (including file name) of the file to
         move
         destination_dir_path ([type]): the path to the directory where the file 
-        should be moved (_not_ including the final slash) 
+        should be moved (including the final slash) 
 
     Let's assume there are some regular patterns here. 
     1. Images are always going to be located in the same directory as the 
@@ -199,22 +205,20 @@ def move_markdown(source_file_path, destination_dir_path):
     * There are some new changes to argument names in here that need to be 
     propagated. 
     """    
-    
-    # Find images in the file
-    images_names = find_images_in_markdown(source_file_path)
 
-    if len(images_names) > 0:
+    # Find images in the file
+    image_paths = find_images_in_markdown(source_file_path)
+
+    if len(image_paths) > 0:
 
         # Confirm that the new destination has an images directory 
-        new_image_path = destination_dir_path + "/images/"
+        new_image_path = destination_dir_path + "images/"
         if not os.path.exists(new_image_path):
             os.makedirs(new_image_path)
 
         # Move image files files
-        for image_name in images_names:
-            # TODO I've now realized that we need to adjust this path -- 
-            # the image files are just going to be file _names_ (need full path)
-            move_file(image_name, new_image_path)
-    
+        for one_image_path in image_paths:
+            move_file(one_image_path, new_image_path)
+
     # Move the original file
     move_file(source_file_path, destination_dir_path)
