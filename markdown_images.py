@@ -180,7 +180,7 @@ def move_file(source_file_path, destination_dir_path):
     """
 
     # Move the file
-    os.system("cp " + "'" + source_file_path + "' " + destination_dir_path)
+    os.system("mv " + "'" + source_file_path + "' " + destination_dir_path)
 
     print("Moved", source_file_path, "to", destination_dir_path)
 
