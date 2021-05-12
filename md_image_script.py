@@ -1,11 +1,9 @@
-#!/home/jared/anaconda3/envs/pothole/bin/python
+#!/usr/bin/python
 
 import os
 import platform
 import glob
 from datetime import datetime
-import re
-import pdb
 import sys
 
 # Adjust the source path according to the detected OS
