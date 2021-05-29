@@ -219,19 +219,10 @@ def move_markdown(source_file_path, destination_dir_path):
             os.makedirs(new_image_path)
 
         # Move image files files
-
-        # FIXME wait. These are all going to be relative image paths. 
-        # This is going to be a huge pain to work with if I'm running this
-        # from literally anywhere else but the source 
-
-        # FIXME I also kind think that I'm not moving files to a location path, 
-        # but a file path... And that is going to require some additional 
-        # review. No... Let's debug this now. No, still don't get this. 
-        # Fix the first issue and see if this is still a problem
         for one_image_path in image_paths:
             
-            # I don't love how verbose this is, but this is a much better 
-            # way to work with paths. 
+            # TODO I don't love how verbose this is, but this is a much better 
+            # way to work with paths. Change this elsewhere... 
             one_image_path = os.path.dirname(
                 source_file_path) + "/" + one_image_path
             
