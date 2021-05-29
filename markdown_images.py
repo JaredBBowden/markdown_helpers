@@ -230,3 +230,52 @@ def move_markdown(source_file_path, destination_dir_path):
 
     # Move the original file
     move_file(source_file_path, destination_dir_path)
+
+
+def image_dir_cleanup(base_directory):
+    """
+    Let's make another function, adding a hidden directory for each file, to 
+    contain all of the images embedded within... That was a dramatic way 
+    to put that.
+    
+    base_directory: the starting point for finding all of the files that 
+    you want to create specific image directories for
+    """
+    # Find all the file paths in the local environment. Let's ensure that
+    # this is done recursively, as some files are now in nested directories
+    file_paths = glob.glob(base_directory + "/*.md") + \
+        glob.glob(base_directory + "/*.ipynb")
+
+    # Loop through paths
+    for file_path in file_paths:
+
+        # For each path, make a new hidden directory with a new "images"
+        # desination at the end... Now that I think about it, I suspect
+        # we should check to see if the directory exists, and only make it
+        # if we _need_ it.
+        new_image_dir_path = "." + \
+            os.path.split(file_path)[1].split(".")[0] + "_images"
+
+        if not os.path.exists(new_image_dir_path):
+            os.makedirs(new_image_dir_path)
+
+        # Find all of the image links in the file
+        image_paths = find_images_in_markdown(file_path)
+
+        # Move all of the image files that were in the grouped image file
+        # to the new file-specific directory
+        for one_image_path in image_paths:
+            move_file(one_image_path, new_image_dir_path)
+
+        # FIXME well, I just realized late in this process that
+        # (of course) we're also going to need to modify the path
+        # references in the original file.
+        with open(file_path, 'r') as file:
+            filedata = file.read()
+
+        # Replace the target string
+        filedata = filedata.replace('./images', "./" + new_image_dir_path)
+
+        # Write the file out again
+        with open(file_path, 'w') as file:
+            file.write(filedata)
