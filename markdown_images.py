@@ -194,22 +194,24 @@ def move_markdown(source_file_path, destination_dir_path):
         source_file_path ([type]): the path (including file name) of the file to
         move
         destination_dir_path ([type]): the path to the directory where the file 
-        should be moved (including the final slash) 
+        should be moved.  
 
     Let's assume there are some regular patterns here. 
     1. Images are always going to be located in the same directory as the 
     markdown file (titled `images`)
     
-    TODO
-    * Need to move the original file, too 
-    * There are some new changes to argument names in here that need to be 
-    propagated. 
+    TODO I should write another function that confirms that the files have been
+    moved
     """    
 
     # Find images in the file
     image_paths = find_images_in_markdown(source_file_path)
 
     if len(image_paths) > 0:
+
+        # I'm tired for forgetting this slash, so here we go
+        if destination_dir_path[-1] != "/":
+            destination_dir_path = destination_dir_path + "/"
 
         # Confirm that the new destination has an images directory 
         new_image_path = destination_dir_path + "images/"
@@ -218,6 +220,12 @@ def move_markdown(source_file_path, destination_dir_path):
 
         # Move image files files
         for one_image_path in image_paths:
+            
+            # TODO I don't love how verbose this is, but this is a much better 
+            # way to work with paths. Change this elsewhere... 
+            one_image_path = os.path.dirname(
+                source_file_path) + "/" + one_image_path
+            
             move_file(one_image_path, new_image_path)
 
     # Move the original file
