@@ -38,14 +38,12 @@ elif platform.system() == "Linux":
     source_path = "~/Pictures/"
     system_OS = "Linux"
 
-# Let's try a different approach to this. Note that we need some adjustment to the path to account
-# for globs apparent inability to work with tilde characters
+# Find recent screenshots in OS-specific location
 list_of_files = sorted(
     glob.glob(os.path.expanduser(source_path) + '*.png'),
     key=os.path.getmtime)
 
-# Find the most recent n files in the source directory.
-
+# Subset to pull the specified range of files that should be moved.
 # TODO presumably here is a better way to set defaults for sys.argv
 n_files = int(sys.argv[1])
 
@@ -54,13 +52,18 @@ if n_files < 1:
 
 subset_file_list = list_of_files[n_files * -1:]
 
-# Create a file path for the new file. Note that here were are going to
-# assume there is an 'images' directory in the current location
-new_path = sys.argv[2] + "/images/"
-if not os.path.exists(new_path):
-    os.makedirs(new_path)
+# Create a `images` file path for the new file(s)
+try:
+    # If the base path exists...
+    os.path.exists(sys.argv[2])
 
-# Here, we're going to just move a single file
+    # Providing the base is there, let's check for an images dir, and add it
+    # if it's not
+    new_path = sys.argv[2] + "/images/"
+    if not os.path.exists(new_path):
+        os.makedirs(new_path)
+except:
+    print("Base path not found")
 
 # Note that this is now a loop: starting to build in functionality to
 # accept multiple files
@@ -77,7 +80,7 @@ for file_name in subset_file_list:
     new_file_name = datetime.now().strftime("%d-%m-%Y %H %M %S") + " " + new_file_name + ".png"
     new_file_name = new_file_name.replace(" ", "_")
 
-    new_file_path = os.getcwd() + "/images/" + new_file_name
+    new_file_path = new_path + new_file_name
 
     # Move the file and confirm to the user where this file has been moved
     os.system("cp " + "'" + file_name + "' " + new_file_path)
