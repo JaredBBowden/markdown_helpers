@@ -157,7 +157,7 @@ def find_images_in_markdown(markdown_file_path):
 
     # TODO what happens if there are no matches? What do we want to return 
     # from this? None? 
-    print("Found", len(matches), "image links")
+    print("Found:", len(matches), "image links")
     
     return matches
 
@@ -314,9 +314,33 @@ def single_image_dir_cleanup(file_path):
         print("File does not include images")
 
 
-def full_image_dir_cleanup():
+def full_image_dir_cleanup(base_directory):
+    """Run the single file across all files in a dir, without recursive 
+    modification
 
+    Args:
+        base_directory ([type]): path to the dir you want to find files in 
+    """
     # Find all the file paths in the local environment. Let's ensure that
     # this is done recursively, as some files are now in nested directories
     file_paths = glob.glob(base_directory + "/*.md") + \
         glob.glob(base_directory + "/*.ipynb")
+
+
+    # Is it going to be this simple? Just loop through files 
+
+    # Right now I think this is not going to operate in recursively
+    for one_file_path in file_paths:
+        
+        print("-----------------------------------------------------")
+        print("Found:", one_file_path)
+        
+        try: 
+            single_image_dir_cleanup(one_file_path)
+        except: 
+            print("Unable to work with", one_file_path)            
+
+
+# TODO so, I think I'm seeing some issues running these functions over...
+# for now, I'm going to "address" this with some lazy exception handling. 
+# Revisit this later. 
