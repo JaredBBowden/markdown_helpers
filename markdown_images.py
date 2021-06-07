@@ -230,3 +230,93 @@ def move_markdown(source_file_path, destination_dir_path):
 
     # Move the original file
     move_file(source_file_path, destination_dir_path)
+
+
+def update_image_paths(file_path, new_image_dir_name):
+    """Open a file located in a file_path string; find and replace image paths 
+    path reference with a new supplied path. 
+
+    Note that the function assumes that images were previously located in a 
+    `./images` path. 
+    
+    Args:
+        file_path (string): [description]
+        new_image_dir_name (string): [description]
+
+    Example
+
+    """
+    # Open the specified file
+    with open(file_path, 'r') as file:
+        filedata = file.read()
+
+    # Replace the target string
+    filedata = filedata.replace('images/', new_image_dir_name + "/")
+
+    # Write the file out to the original location
+    with open(file_path, 'w') as file:
+        file.write(filedata)    
+
+
+def single_image_dir_cleanup(file_path):
+    """
+    Let's make another function, adding a hidden directory for each file, to 
+    contain all of the images embedded within... That was a dramatic way 
+    to put that.
+    
+    base_directory: the starting point for finding all of the files that 
+    you want to create specific image directories for
+    
+    I'm now thinking that this should be focused on single files; we can always 
+    loop over this later. 
+    
+    file_path: path to the file that is going to be cleaned.
+    """
+    
+    # Find all of the image links in the file
+    image_paths = find_images_in_markdown(file_path)
+
+    if len(image_paths) > 0:
+
+        # For each path, make a new hidden directory with a new "images"
+        # destination at the end... Now that I think about it, I suspect
+        # we should check to see if the directory exists, and only make it
+        # if we _need_ it.
+        new_image_dir_name = "." + \
+            os.path.split(file_path)[1].split(".")[0] + "_images"
+
+        # Note that this is going to create a relative path... Let's make this
+        # absolute.
+        new_image_dir_path = os.path.split(file_path)[0] + "/" + new_image_dir_name
+
+        if not os.path.exists(new_image_dir_path):
+            os.makedirs(new_image_dir_path)
+
+        # Move all of the image files that were in the grouped image file
+        # to the new file-specific directory
+        for one_image_path in image_paths:
+
+            # It's possible that this is needs to be an absolute path
+            source_image = os.path.split(
+                file_path)[0] + "/images/" + os.path.basename(one_image_path)
+            destination_image = new_image_dir_path + \
+                "/" + os.path.basename(one_image_path)
+
+            # TODO this is a much more reliable way to move files than my method
+            # let's refactor to use this
+            os.replace(source_image, destination_image)
+
+        # Modify image path references within the file, and save to the 
+        # original location
+        update_image_paths(file_path, new_image_dir_name)
+    
+    else:
+        print("File does not include images")
+
+
+def full_image_dir_cleanup():
+
+    # Find all the file paths in the local environment. Let's ensure that
+    # this is done recursively, as some files are now in nested directories
+    file_paths = glob.glob(base_directory + "/*.md") + \
+        glob.glob(base_directory + "/*.ipynb")
