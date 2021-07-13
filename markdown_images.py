@@ -290,13 +290,10 @@ def rename_file_references(source_file, new_path):
     """Open a file, find all markdown references, replace with the new path. 
     
     Args:
-        source_file (str): the path to the file to be modified
-        new_path (str): the path to the new file to be used as a reference
-
-    Args:
-        source_file ([type]): the _name_ (not the path) of the file that you're
+        source_file (str): the _name_ (not the path) of the file that you're
          modifying
-        new_path ([type]): the new path to the file (exclude the name)
+        new_path (str): the path to the new file to be used as a reference. 
+        don't include the final slash.
     """    
     with open(source_file, 'r') as file:
         filedata = file.read()
@@ -309,22 +306,8 @@ def rename_file_references(source_file, new_path):
         file.write(filedata)
 
 
-"""
-Now what we need is some testing to see if this works.
-* Make a directory with new markdown files and images ("original")
-* Make a new directory to move the file -- note: _just_ the file ("new")
-* For now, let's move things manually
-* Use the function up update the path.
-* Do this again with a note book. 
+# TODO let's make a function to do this over all images in a directory,
+# then move this to the script file. 
 
-OK, I've now move the file to a new directory. Confirming that the image link 
-is now broken...
-Confirmed
-
-Now, let's load up an interactive terminal and have a look at whether we can 
-modify the path...
-
-Alright, so the path was all jacked up.. 
-
-Now confirmed that this will work for markdown files. Will the 
-"""
+# I think that move markdown still has a place, particularly for when files
+# need to move to a totally new path (ie we want to move the file AND images)
