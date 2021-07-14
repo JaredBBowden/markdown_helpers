@@ -233,6 +233,19 @@ def move_markdown(source_file_path, destination_dir_path):
     move_file(source_file_path, destination_dir_path)
 
 
+def find_notebooks_and_markdown_files(base_path):
+    """Find all notbook and markdown files in a specified directory, and 
+    return paths
+
+    Args:
+        base_path (string): string to the path where you want to look or files
+    """
+    file_paths = glob.glob(base_path + "/*.md") + \
+        glob.glob(base_directory + "/*.ipynb")
+
+    return file_paths
+
+
 def image_dir_cleanup(base_directory):
     """
     Let's make another function, adding a hidden directory for each file, to 
@@ -244,8 +257,7 @@ def image_dir_cleanup(base_directory):
     """
     # Find all the file paths in the local environment. Let's ensure that
     # this is done recursively, as some files are now in nested directories
-    file_paths = glob.glob(base_directory + "/*.md") + \
-        glob.glob(base_directory + "/*.ipynb")
+    file_path = find_notebooks_and_markdown_files(base_directory)
 
     # Loop through paths
     for file_path in file_paths:
