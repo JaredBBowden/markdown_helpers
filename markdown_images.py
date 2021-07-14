@@ -240,8 +240,8 @@ def find_notebooks_and_markdown_files(base_path):
     Args:
         base_path (string): string to the path where you want to look or files
     """
-    file_paths = glob.glob(base_path + "/*.md") + \
-        glob.glob(base_directory + "/*.ipynb")
+    file_paths = glob.glob(base_path + "*.md") + \
+        glob.glob(base_path + "*.ipynb")
 
     return file_paths
 
@@ -312,8 +312,8 @@ def rename_file_references(source_file, new_path):
 
     # From use, I've found that I can be a little inconsistent with how 
     # I enter the extra string. It needs to _not_ have the final slash
-    if new_path[-1] == "/":
-        new_path = new_path[:-1]
+    if new_path[-1] != "/":
+        new_path = new_path + "/"
 
     # Find and replace the target strings
     filedata = filedata.replace('./images/', new_path)
@@ -328,3 +328,22 @@ def rename_file_references(source_file, new_path):
 
 # I think that move markdown still has a place, particularly for when files
 # need to move to a totally new path (ie we want to move the file AND images)
+
+def rename_all_file_references(base_directory, new_path):
+    """Run `rename_file_references` on all files within a specified directory
+
+    Args:
+        base_directory (string): string to path containing files that you want
+        to replace
+        new_path (string): string to the preferred image directory
+    """
+    file_paths = find_notebooks_and_markdown_files(base_directory)
+    print("Found: ", len(file_paths))
+
+    for one_file in file_paths:
+        print("Running:", one_file)
+        rename_file_references(os.path.basename(one_file), new_path)
+
+
+# TODO starting to think that I might do better to do this with some input 
+# prompts input("File name: ")
