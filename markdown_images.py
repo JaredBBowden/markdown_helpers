@@ -298,7 +298,12 @@ def rename_file_references(source_file, new_path):
     with open(source_file, 'r') as file:
         filedata = file.read()
 
-    # Replace the target string
+    # From use, I've found that I can be a little inconsistent with how 
+    # I enter the extra string. It needs to _not_ have the final slash
+    if new_path[-1] == "/":
+        new_path = new_path[:-1]
+
+    # Find and replace the target strings
     filedata = filedata.replace('./images/', new_path)
 
     # Write the file out again
