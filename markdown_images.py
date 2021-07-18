@@ -233,6 +233,7 @@ def move_markdown(source_file_path, destination_dir_path):
     move_file(source_file_path, destination_dir_path)
 
 
+<<<<<<< HEAD
 def find_notebooks_and_markdown_files(base_path):
     """Find all notbook and markdown files in a specified directory, and 
     return paths
@@ -247,6 +248,9 @@ def find_notebooks_and_markdown_files(base_path):
 
 
 def image_dir_cleanup(base_directory):
+=======
+def single_image_dir_cleanup(file_path):
+>>>>>>> 9af35eed17a333ccdd667a19f3771e6ce9a22ca0
     """
     Let's make another function, adding a hidden directory for each file, to 
     contain all of the images embedded within... That was a dramatic way 
@@ -254,31 +258,59 @@ def image_dir_cleanup(base_directory):
     
     base_directory: the starting point for finding all of the files that 
     you want to create specific image directories for
+    
+    I'm now thinking that this should be focused on single files; we can always 
+    loop over this later. 
+    
+    file_path: path to the file that is going to be cleaned.
     """
+<<<<<<< HEAD
     # Find all the file paths in the local environment. Let's ensure that
     # this is done recursively, as some files are now in nested directories
     file_path = find_notebooks_and_markdown_files(base_directory)
+=======
+    
+    # Find all of the image links in the file
+    image_paths = find_images_in_markdown(file_path)
+>>>>>>> 9af35eed17a333ccdd667a19f3771e6ce9a22ca0
 
-    # Loop through paths
-    for file_path in file_paths:
+    if len(image_paths) > 0:
 
         # For each path, make a new hidden directory with a new "images"
-        # desination at the end... Now that I think about it, I suspect
+        # destination at the end... Now that I think about it, I suspect
         # we should check to see if the directory exists, and only make it
         # if we _need_ it.
-        new_image_dir_path = "." + \
+        new_image_dir_name = "." + \
             os.path.split(file_path)[1].split(".")[0] + "_images"
+
+        # Create a new 
+
+
+
+        # Note that this is going to create a relative path... Let's make this
+        # absolute.
+        new_image_dir_path = os.path.split(file_path)[0] + "/" + new_image_dir_name
 
         if not os.path.exists(new_image_dir_path):
             os.makedirs(new_image_dir_path)
 
-        # Find all of the image links in the file
-        image_paths = find_images_in_markdown(file_path)
+        
+
+        # TODO if there are no files, skip all this.
 
         # Move all of the image files that were in the grouped image file
         # to the new file-specific directory
         for one_image_path in image_paths:
-            move_file(one_image_path, new_image_dir_path)
+
+            # It's possible that this is needs to be an absolute path
+            source_image = os.path.split(
+                file_path)[0] + "/images/" + os.path.basename(one_image_path)
+            destination_image = new_image_dir_path + \
+                "/" + os.path.basename(one_image_path)
+
+            # TODO this is a much more relable way to move files than my method
+            # let's refactor to use this
+            os.replace(source_image, destination_image)
 
         # FIXME well, I just realized late in this process that
         # (of course) we're also going to need to modify the path
