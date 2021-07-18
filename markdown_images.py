@@ -329,6 +329,7 @@ def rename_file_references(source_file, new_path):
 # I think that move markdown still has a place, particularly for when files
 # need to move to a totally new path (ie we want to move the file AND images)
 
+
 def rename_all_file_references(base_directory, new_path):
     """Run `rename_file_references` on all files within a specified directory
 
