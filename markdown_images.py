@@ -138,6 +138,7 @@ def find_images_in_markdown(markdown_file_path):
     * I could really make better use of these regex objects. For now, I'm 
     parsing things in a way that is... "not great". 
     """
+    #TODO review: want this to find local file paths, _not_ external links.
     regex = re.compile("(?:!\[(.*?)\]\((.*?)\))")
 
     matches = []
