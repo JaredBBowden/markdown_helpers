@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+
+def rename_file_references(source_file, new_path):
+    """Open a file, find all markdown references, replace with the new path. 
+    
+    Args:
+        source_file (str): the _name_ (not the path) of the file that you're
+         modifying
+        new_path (str): the path to the new file to be used as a reference. 
+        don't include the final slash.
+    """    
+    with open(source_file, 'r') as file:
+        filedata = file.read()
+
+    # From use, I've found that I can be a little inconsistent with how 
+    # I enter the extra string. It needs to _not_ have the final slash
+    if new_path[-1] != "/":
+        new_path = new_path + "/"
+
+    # Find and replace the target strings
+    filedata = filedata.replace('./images/', new_path)
+
+    # Write the file out again
+    with open(source_file, 'w') as file:
+        file.write(filedata)
+
+
+# TODO let's make a function to do this over all images in a directory,
+# then move this to the script file. 
+
+# I think that move markdown still has a place, particularly for when files
+# need to move to a totally new path (ie we want to move the file AND images)
+
+
+def rename_all_file_references(base_directory, new_path):
+    """Run `rename_file_references` on all files within a specified directory
+
+    Args:
+        base_directory (string): string to path containing files that you want
+        to replace
+        new_path (string): string to the preferred image directory
+    """
+    file_paths = find_notebooks_and_markdown_files(base_directory)
+    print("Found: ", len(file_paths))
+
+    for one_file in file_paths:
+        print("Running:", one_file)
+        rename_file_references(os.path.basename(one_file), new_path)
+
+
+# TODO starting to think that I might do better to do this with some input 
+# prompts input("File name: ")
+
+
+check_mode = input("Run on single file (y/n)?: ")
+
+if check_mode = "y":
+    print("Single file mode")
+
+
+if check_mode == "n":
+    print("Directory mode mode")
+
+    source_file = input("Source file: ")
+    new_path = input("Source file: ")
+
+else:
+    print("Please enter y or n")
