@@ -31,7 +31,7 @@ if not os.path.exists(new_path):
 
 # Here, we're going to just move a single file
 
-# Note that this is now a loop: starting to build in functionality to 
+# Note that this is now a loop: starting to build in functionality to
 # accept multiple files
 markdown_return = []
 
@@ -40,7 +40,8 @@ for file_name in subset_file_list:
     # Add an (optimistically) more informative title, and transform to replace
     # spaces with underscores
     new_file_name = input("File name: ")
-    new_file_name = datetime.now().strftime("%d-%m-%Y %H %M %S") + " " + new_file_name + ".png"
+    new_file_name = datetime.now().strftime("%d-%m-%Y %H %M %S") + \
+        " " + new_file_name + ".png"
     new_file_name = new_file_name.replace(" ", "_")
 
     new_file_path = os.getcwd() + "/images/" + new_file_name
@@ -65,12 +66,15 @@ if system_OS == "Mac":
     else:
         several_markdown_values = "\n".join(str(e) for e in markdown_return)
         os.system("printf " + "'" + several_markdown_values + "'" +
-                " | pbcopy")
+                  " | pbcopy")
 elif system_OS == 'Linux':
     if len(markdown_return) == 1:
-        os.system("echo " + "'" + markdown_return[0] + "'" + " | xclip -sel clip")
+        os.system("echo " + "'" +
+                  markdown_return[0] + "'" + " | xclip -sel clip")
     else:
         several_markdown_values = "\n".join(str(e) for e in markdown_return)
         os.system("printf " + "'" + several_markdown_values + "'" +
-                " | xclip -sel clip")
+                  " | xclip -sel clip")
 
+
+# TODO I would prefer to _import_ these functions from the helper file.
