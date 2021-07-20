@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
 
+# TODO more imports are required
 from markdown_images import find_notebooks_and_markdown_files
 
 
-def rename_file_references(source_file, new_path):
+def rename_file_references(source_file_path, new_path):
     """Open a file, find all markdown references, replace with the new path. 
 
     Args:
@@ -15,7 +16,7 @@ def rename_file_references(source_file, new_path):
 
     # TODO I don't see how this can just be a file name and not a full path...
 
-    with open(source_file, 'r') as file:
+    with open(source_file_path, 'r') as file:
         filedata = file.read()
 
     # From use, I've found that I can be a little inconsistent with how
@@ -27,7 +28,7 @@ def rename_file_references(source_file, new_path):
     filedata = filedata.replace('./images/', new_path)
 
     # Write the file out again
-    with open(source_file, 'w') as file:
+    with open(source_file_path, 'w') as file:
         file.write(filedata)
 
 
@@ -38,7 +39,7 @@ def rename_file_references(source_file, new_path):
 # need to move to a totally new path (ie we want to move the file AND images)
 
 
-def rename_all_file_references(base_directory, new_path):
+def rename_all_file_references(base_directory_path, new_path):
     """Run `rename_file_references` on all files within a specified directory
 
     Args:
@@ -49,7 +50,7 @@ def rename_all_file_references(base_directory, new_path):
 
     # TODO I think we're going to need some more path normalization in here
 
-    file_paths = find_notebooks_and_markdown_files(base_directory)
+    file_paths = find_notebooks_and_markdown_files(base_directory_path)
     print("Found: ", len(file_paths))
 
     for one_file in file_paths:
@@ -65,18 +66,18 @@ if __name__ == "__main__":
     if check_mode == "y":
         print("Single file mode")
 
-        base_directory = input("Enter path to base_directory: ")
-        new_path = input("Enter _new_ relative path to images: ")
+        the_file = input("Enter path to base_directory: ")
+        the_new_path = input("Enter _new_ relative path to images: ")
 
-        rename_file_references(source_file, new_path)
+        rename_file_references(the_file, the_new_path)
 
     elif check_mode == "n":
         print("Directory mode mode")
 
-        base_directory = input("Enter path to base_directory: ")
-        new_path = input("Enter _new_ relative path to images: ")
+        the_base_directory_path = input("Enter path to base_directory: ")
+        the_new_path = input("Enter _new_ relative path to images: ")
 
-        rename_all_file_references(base_directory, new_path)
+        rename_all_file_references(the_base_directory_path, the_new_path)
 
     else:
         print("Please enter y or n")
@@ -89,3 +90,6 @@ if __name__ == "__main__":
 
 # Also, the more I look around here, the more I see that there are more
 # _internal_ functions that I have to pull in, too.
+
+
+
