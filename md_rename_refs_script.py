@@ -8,8 +8,7 @@ def rename_file_references(source_file, new_path):
     """Open a file, find all markdown references, replace with the new path. 
 
     Args:
-        source_file (str): the _name_ (not the path) of the file that you're
-         modifying
+        source_file (str): the full path to the file that you want to replace
         new_path (str): the path to the new file to be used as a reference. 
         don't include the final slash.
     """
