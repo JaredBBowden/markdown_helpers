@@ -30,8 +30,9 @@ def markdown_image(n_files=1):
         source_path = "~/Pictures/"
         system_OS = "Linux"
 
-    # Let's try a different approach to this. Note that we need some adjustment to the path to account
-    # for globs apparent inability to work with tilde characters
+    # Let's try a different approach to this. Note that we need some adjustment
+    # to the path to account for globs apparent inability to work with tilde
+    # characters
     list_of_files = sorted(
         glob.glob(os.path.expanduser(source_path) + '*.png'),
         key=os.path.getmtime)
@@ -137,6 +138,7 @@ def find_images_in_markdown(markdown_file_path):
     * I could really make better use of these regex objects. For now, I'm 
     parsing things in a way that is... "not great". 
     """
+    #TODO review: want this to find local file paths, _not_ external links.
     regex = re.compile("(?:!\[(.*?)\]\((.*?)\))")
 
     matches = []
@@ -157,7 +159,7 @@ def find_images_in_markdown(markdown_file_path):
 
     # TODO what happens if there are no matches? What do we want to return 
     # from this? None? 
-    print("Found:", len(matches), "image links")
+    print("Found", len(matches), "image links")
     
     return matches
 
@@ -232,33 +234,24 @@ def move_markdown(source_file_path, destination_dir_path):
     move_file(source_file_path, destination_dir_path)
 
 
-def update_image_paths(file_path, new_image_dir_name):
-    """Open a file located in a file_path string; find and replace image paths 
-    path reference with a new supplied path. 
+def find_notebooks_and_markdown_files(base_path):
+    """Find all notbook and markdown files in a specified directory, and 
+    return paths
 
-    Note that the function assumes that images were previously located in a 
-    `./images` path. 
-    
     Args:
-        file_path (string): [description]
-        new_image_dir_name (string): [description]
-
-    Example
-
+        base_path (string): string to the path where you want to look or files
     """
-    # Open the specified file
-    with open(file_path, 'r') as file:
-        filedata = file.read()
+    base_path = os.path.abspath(base_path)
 
-    # Replace the target string
-    filedata = filedata.replace('images/', new_image_dir_name + "/")
+    file_paths = glob.glob(base_path + "/*.md") + \
+        glob.glob(base_path + "/*.ipynb")
 
-    # Write the file out to the original location
-    with open(file_path, 'w') as file:
-        file.write(filedata)    
+    print("Found: ", len(file_paths), "files")
+
+    return file_paths
 
 
-def single_image_dir_cleanup(file_path):
+def image_dir_cleanup(base_directory):
     """
     Let's make another function, adding a hidden directory for each file, to 
     contain all of the images embedded within... That was a dramatic way 
@@ -266,81 +259,94 @@ def single_image_dir_cleanup(file_path):
     
     base_directory: the starting point for finding all of the files that 
     you want to create specific image directories for
-    
-    I'm now thinking that this should be focused on single files; we can always 
-    loop over this later. 
-    
-    file_path: path to the file that is going to be cleaned.
     """
-    
-    # Find all of the image links in the file
-    image_paths = find_images_in_markdown(file_path)
+    # Find all the file paths in the local environment. Let's ensure that
+    # this is done recursively, as some files are now in nested directories
+    file_path = find_notebooks_and_markdown_files(base_directory)
 
-    if len(image_paths) > 0:
+    # Loop through paths
+    for file_path in file_paths:
 
         # For each path, make a new hidden directory with a new "images"
-        # destination at the end... Now that I think about it, I suspect
+        # desination at the end... Now that I think about it, I suspect
         # we should check to see if the directory exists, and only make it
         # if we _need_ it.
-        new_image_dir_name = "." + \
+        new_image_dir_path = "." + \
             os.path.split(file_path)[1].split(".")[0] + "_images"
-
-        # Note that this is going to create a relative path... Let's make this
-        # absolute.
-        new_image_dir_path = os.path.split(file_path)[0] + "/" + new_image_dir_name
 
         if not os.path.exists(new_image_dir_path):
             os.makedirs(new_image_dir_path)
 
+        # Find all of the image links in the file
+        image_paths = find_images_in_markdown(file_path)
+
         # Move all of the image files that were in the grouped image file
         # to the new file-specific directory
         for one_image_path in image_paths:
+            move_file(one_image_path, new_image_dir_path)
 
-            # It's possible that this is needs to be an absolute path
-            source_image = os.path.split(
-                file_path)[0] + "/images/" + os.path.basename(one_image_path)
-            destination_image = new_image_dir_path + \
-                "/" + os.path.basename(one_image_path)
+        # FIXME well, I just realized late in this process that
+        # (of course) we're also going to need to modify the path
+        # references in the original file.
 
-            # TODO this is a much more reliable way to move files than my method
-            # let's refactor to use this
-            os.replace(source_image, destination_image)
+        # I'm not sure this is functional... Pull this out, make a function
+        # test, and then move things back.
 
-        # Modify image path references within the file, and save to the 
-        # original location
-        update_image_paths(file_path, new_image_dir_name)
-    
-    else:
-        print("File does not include images")
+        with open(file_path, 'r') as file:
+            filedata = file.read()
+
+        # Replace the target string
+        filedata = filedata.replace('./images', "./" + new_image_dir_path)
+
+        # Write the file out again
+        with open(file_path, 'w') as file:
+            file.write(filedata)
 
 
-def full_image_dir_cleanup(base_directory):
-    """Run the single file across all files in a dir, without recursive 
-    modification
+def rename_file_references(source_file_path, new_path):
+    """Open a file, find all markdown references, replace with the new path. 
 
     Args:
-        base_directory ([type]): path to the dir you want to find files in 
+        source_file (str): the full path to the file that you want to replace
+        new_path (str): the path to the new file to be used as a reference. 
+        don't include the final slash.
     """
-    # Find all the file paths in the local environment. Let's ensure that
-    # this is done recursively, as some files are now in nested directories
-    file_paths = glob.glob(base_directory + "/*.md") + \
-        glob.glob(base_directory + "/*.ipynb")
 
+    source_file_path = os.path.normpath(source_file_path)
+    new_path = os.path.normpath(new_path)
 
-    # Is it going to be this simple? Just loop through files 
+    if os.path.exists(source_file_path) == True:
 
-    # Right now I think this is not going to operate in recursively
-    for one_file_path in file_paths:
+        print("Found file: ", source_file_path)
         
-        print("-----------------------------------------------------")
-        print("Found:", one_file_path)
-        
-        try: 
-            single_image_dir_cleanup(one_file_path)
-        except: 
-            print("Unable to work with", one_file_path)            
+        with open(source_file_path, 'r') as file:
+            filedata = file.read()
+
+        # Find and replace the target strings
+        filedata = filedata.replace('./images', new_path)
+
+        # Write the file out again
+        with open(source_file_path, 'w') as file:
+            file.write(filedata)
+    else:
+        print("File not found: ", source_file_path)
 
 
-# TODO so, I think I'm seeing some issues running these functions over...
-# for now, I'm going to "address" this with some lazy exception handling. 
-# Revisit this later. 
+def rename_all_file_references(base_directory_path, new_path):
+    """Run `rename_file_references` on all files within a specified directory
+
+    Args:
+        base_directory (string): string to path containing files that you want
+        to replace
+        new_path (string): string to the preferred image directory
+    """
+
+    # Path normalization
+    base_directory_path = os.path.normpath(base_directory_path)
+    new_path = os.path.normpath(new_path)
+
+    file_paths = find_notebooks_and_markdown_files(base_directory_path)
+
+    for one_file in file_paths:
+        print("Running:", one_file)
+        rename_file_references(os.path.abspath(one_file), new_path)
