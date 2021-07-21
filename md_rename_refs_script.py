@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 # TODO more imports are required
 from markdown_images import find_notebooks_and_markdown_files
 
@@ -15,21 +14,21 @@ def rename_file_references(source_file_path, new_path):
     """
 
     source_file_path = os.path.normpath(source_file_path)
+    new_path = os.path.normpath(new_path)
 
-    with open(source_file_path, 'r') as file:
-        filedata = file.read()
+    if os.path.exists(source_file_path) == True:
 
-    # From use, I've found that I can be a little inconsistent with how
-    # I enter the extra string. It needs to _not_ have the final slash
-    if new_path[-1] != "/":
-        new_path = new_path + "/"
+        with open(source_file_path, 'r') as file:
+            filedata = file.read()
 
-    # Find and replace the target strings
-    filedata = filedata.replace('./images/', new_path)
+        # Find and replace the target strings
+        filedata = filedata.replace('./images', new_path)
 
-    # Write the file out again
-    with open(source_file_path, 'w') as file:
-        file.write(filedata)
+        # Write the file out again
+        with open(source_file_path, 'w') as file:
+            file.write(filedata)
+    else:
+        print("File not found: ", source_file_path)
 
 
 # TODO let's make a function to do this over all images in a directory,
@@ -68,7 +67,7 @@ if __name__ == "__main__":
     if check_mode == "y":
         print("Single file mode")
 
-        the_file = input("Enter path to base_directory: ")
+        the_file = input("Enter current path to the file: ")
         the_new_path = input("Enter _new_ relative path to images: ")
 
         rename_file_references(the_file, the_new_path)
