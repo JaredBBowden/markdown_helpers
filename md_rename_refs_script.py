@@ -14,7 +14,7 @@ def rename_file_references(source_file_path, new_path):
         don't include the final slash.
     """
 
-    # TODO I don't see how this can just be a file name and not a full path...
+    source_file_path = os.path.normpath(source_file_path)
 
     with open(source_file_path, 'r') as file:
         filedata = file.read()
@@ -48,7 +48,9 @@ def rename_all_file_references(base_directory_path, new_path):
         new_path (string): string to the preferred image directory
     """
 
-    # TODO I think we're going to need some more path normalization in here
+    # Path normalization
+    base_directory_path = os.path.normpath(base_directory_path)
+    new_path = os.path.normpath(new_path)
 
     file_paths = find_notebooks_and_markdown_files(base_directory_path)
     print("Found: ", len(file_paths))
