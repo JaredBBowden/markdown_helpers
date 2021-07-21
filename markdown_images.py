@@ -299,39 +299,34 @@ def image_dir_cleanup(base_directory):
             file.write(filedata)
 
 
-def rename_file_references(source_file, new_path):
+def rename_file_references(source_file_path, new_path):
     """Open a file, find all markdown references, replace with the new path. 
-    
+
     Args:
-        source_file (str): the _name_ (not the path) of the file that you're
-         modifying
+        source_file (str): the full path to the file that you want to replace
         new_path (str): the path to the new file to be used as a reference. 
         don't include the final slash.
-    """    
-    with open(source_file, 'r') as file:
-        filedata = file.read()
+    """
 
-    # From use, I've found that I can be a little inconsistent with how 
-    # I enter the extra string. It needs to _not_ have the final slash
-    if new_path[-1] != "/":
-        new_path = new_path + "/"
+    source_file_path = os.path.normpath(source_file_path)
+    new_path = os.path.normpath(new_path)
 
-    # Find and replace the target strings
-    filedata = filedata.replace('./images/', new_path)
+    if os.path.exists(source_file_path) == True:
 
-    # Write the file out again
-    with open(source_file, 'w') as file:
-        file.write(filedata)
+        with open(source_file_path, 'r') as file:
+            filedata = file.read()
 
+        # Find and replace the target strings
+        filedata = filedata.replace('./images', new_path)
 
-# TODO let's make a function to do this over all images in a directory,
-# then move this to the script file. 
-
-# I think that move markdown still has a place, particularly for when files
-# need to move to a totally new path (ie we want to move the file AND images)
+        # Write the file out again
+        with open(source_file_path, 'w') as file:
+            file.write(filedata)
+    else:
+        print("File not found: ", source_file_path)
 
 
-def rename_all_file_references(base_directory, new_path):
+def rename_all_file_references(base_directory_path, new_path):
     """Run `rename_file_references` on all files within a specified directory
 
     Args:
@@ -339,13 +334,14 @@ def rename_all_file_references(base_directory, new_path):
         to replace
         new_path (string): string to the preferred image directory
     """
-    file_paths = find_notebooks_and_markdown_files(base_directory)
+
+    # Path normalization
+    base_directory_path = os.path.normpath(base_directory_path)
+    new_path = os.path.normpath(new_path)
+
+    file_paths = find_notebooks_and_markdown_files(base_directory_path)
     print("Found: ", len(file_paths))
 
     for one_file in file_paths:
         print("Running:", one_file)
         rename_file_references(os.path.basename(one_file), new_path)
-
-
-# TODO starting to think that I might do better to do this with some input 
-# prompts input("File name: ")
