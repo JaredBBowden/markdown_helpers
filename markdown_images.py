@@ -241,8 +241,12 @@ def find_notebooks_and_markdown_files(base_path):
     Args:
         base_path (string): string to the path where you want to look or files
     """
-    file_paths = glob.glob(base_path + "*.md") + \
-        glob.glob(base_path + "*.ipynb")
+    base_path = os.path.abspath(base_path)
+
+    file_paths = glob.glob(base_path + "/*.md") + \
+        glob.glob(base_path + "/*.ipynb")
+
+    print("Found: ", len(file_paths), "files")
 
     return file_paths
 
@@ -313,6 +317,8 @@ def rename_file_references(source_file_path, new_path):
 
     if os.path.exists(source_file_path) == True:
 
+        print("Found file: ", source_file_path)
+        
         with open(source_file_path, 'r') as file:
             filedata = file.read()
 
@@ -340,8 +346,7 @@ def rename_all_file_references(base_directory_path, new_path):
     new_path = os.path.normpath(new_path)
 
     file_paths = find_notebooks_and_markdown_files(base_directory_path)
-    print("Found: ", len(file_paths))
 
     for one_file in file_paths:
         print("Running:", one_file)
-        rename_file_references(os.path.basename(one_file), new_path)
+        rename_file_references(os.path.abspath(one_file), new_path)
