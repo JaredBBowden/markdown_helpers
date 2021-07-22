@@ -3,6 +3,7 @@ import platform
 import glob
 from datetime import datetime
 import re
+from shutil import copyfile
 
 
 # TODO Well... [gestures broadly] there's a lot. Base functionality is there
@@ -44,7 +45,10 @@ def markdown_image(file_destination_path):
     Pull the n most recent screenshots, re-title, move a destination of your choosing,
     and copy a formatted markdown snippet to the system clipboard.
 
-    n_files: the number of files you want to move
+    Args:
+        file_destination_path (string): path to the file where the image will 
+        go. Note that this does _not_ include the path to the `images` 
+        directory.
 
     Dependencies
     * xclip: to copy path to clipboard
@@ -79,7 +83,8 @@ def markdown_image(file_destination_path):
     new_file_path = new_path + new_file_name
 
     # TODO: this is probably a better approach to this. Kill the other function.
-    os.replace(original_image, new_file_path)
+    # Note that this could be destructive. Going to change to copy.
+    copyfile(original_image, new_file_path)
     print("Moved image to:", new_file_path)
 
     # Now we need the path to the image 
