@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from markdown_images import find_notebooks_and_markdown_files, rename_file_references, rename_all_file_references
+from markdown_images import rename_file_references, rename_all_file_references
 
 
 if __name__ == "__main__":
