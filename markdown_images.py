@@ -145,6 +145,9 @@ def find_images_in_markdown(markdown_file_path):
     parsing things in a way that is... "not great". 
     """
     # TODO review: want this to find local file paths, _not_ external links.
+    # FIXME test here: https://regexr.com/
+    # WE have an issue where this regular expression is going to find external
+    # links as well as internal paths...
     regex = re.compile("(?:!\[(.*?)\]\((.*?)\))")
 
     matches = []
@@ -159,10 +162,14 @@ def find_images_in_markdown(markdown_file_path):
                 # of re matches -- as follows
                 a_match = result.group(0)
 
-                # All we really care about is the image stuff (between parentheses)
-                image_path = a_match[a_match.find(
-                    "(")+1:a_match.find(")")].replace('"', "")
-                matches.append(image_path)
+                # TODO add logic to ensure that links are internal paths and 
+                # not external: ^(http|https)://
+                # Well, let's do this the dumb way for now.
+                if "http" not in a_match:
+                    # All we really care about is the image stuff (between parentheses)
+                    image_path = a_match[a_match.find(
+                        "(")+1:a_match.find(")")].replace('"', "")
+                    matches.append(image_path)
 
     # TODO what happens if there are no matches? What do we want to return
     # from this? None?
